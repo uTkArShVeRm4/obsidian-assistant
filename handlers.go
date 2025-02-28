@@ -157,8 +157,13 @@ func processImage(imagePath string) {
 			log.Printf("Error running git add: %v", err)
 			return
 		}
+		ist, err := time.LoadLocation("Asia/Kolkata")
+		if err != nil {
+			log.Println("Could not load IST timezone:", err)
+			ist = time.UTC // Fallback to UTC if IST is not loaded
+		}
 
-		cmd = exec.Command("git", "-C", "/app/data", "commit", "-m", fmt.Sprintf("Update with handwritten note %s", time.Now().Format("2006-01-02 15:04:05")))
+		cmd = exec.Command("git", "-C", "/app/data", "commit", "-m", fmt.Sprintf("Update with handwritten note %s", time.Now().In(ist).Format("2006-01-02 15:04:05")))
 		cmd.Dir = "/app/data"
 		err = cmd.Run()
 		if err != nil {
