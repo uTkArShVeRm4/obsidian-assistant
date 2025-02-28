@@ -1,4 +1,4 @@
-package main
+package Main
 
 import (
 	"context"
@@ -99,7 +99,7 @@ func processImage(imagePath string) {
 		markdownContent += markdownLink
 		os.MkdirAll("/app/data", 0755)
 		// write the markdown content to a file
-		file, err := os.Create(fmt.Sprintf("/app/data/main/%s.md", fileName))
+		file, err := os.Create(fmt.Sprintf("/app/data/Main/%s.md", fileName))
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -109,9 +109,9 @@ func processImage(imagePath string) {
 			log.Fatal(err)
 		}
 		fmt.Println("Markdown file created successfully!")
-		// Move the image to the main folder
+		// Move the image to the Main folder
 		imagePath := fmt.Sprintf("/app/data/uploads/%s", fileName)
-		err = os.Rename(imagePath, fmt.Sprintf("/app/data/main/attachments/%s", fileName))
+		err = os.Rename(imagePath, fmt.Sprintf("/app/data/Main/attachments/%s", fileName))
 		if err != nil {
 			log.Fatal(err)
 		}
