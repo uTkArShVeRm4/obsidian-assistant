@@ -114,7 +114,8 @@ func processImage(imagePath string) {
 		fmt.Println("Markdown file created successfully!")
 
 		// Make a Copy of the image in the Main/Attachments folder
-		sourcePath := fmt.Sprintf("/app/data/uploads/%s", fileName)
+		fileName = filepath.Base(imagePath)
+		sourcePath := fmt.Sprintf("/app/data/uploads/%s%s", fileName)
 		destinationDir := "/app/data/Main/Attachments"
 		destinationPath := filepath.Join(destinationDir, fileName)
 
