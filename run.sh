@@ -4,4 +4,4 @@ sudo docker run -d -p 7777:7777 \
     -e GIT_USERNAME="your-username" \
     -e GIT_EMAIL="your-email@example.com" \
     -e GIT_ACCESS_TOKEN="your-personal-access-token" \
-    -e GIT_REMOTE_URL="https://github.com/yourusername/your-repo.git"
+    -e GIT_REMOTE_URL="https://your-username:$GIT_ACCESS_TOKEN@github.com/your/repo.git"
