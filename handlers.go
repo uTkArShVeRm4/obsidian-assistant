@@ -115,7 +115,7 @@ func processImage(imagePath string) {
 
 		// Make a Copy of the image in the Main/Attachments folder
 		fileName = filepath.Base(imagePath)
-		sourcePath := fmt.Sprintf("/app/data/uploads/%s%s", fileName)
+		sourcePath := fmt.Sprintf("/app/data/uploads/%s", fileName)
 		destinationDir := "/app/data/Main/Attachments"
 		destinationPath := filepath.Join(destinationDir, fileName)
 
