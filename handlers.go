@@ -153,9 +153,10 @@ func processImage(imagePath string) {
 		// Perform git add and commit
 		cmd := exec.Command("git", "-C", "/app/data/Main", "add", ".")
 		cmd.Dir = "/app/data/Main" // Set the working directory for the command
-		err = cmd.Run()
+
 		var stderr bytes.Buffer
 		cmd.Stderr = &stderr
+
 		err = cmd.Run()
 		if err != nil {
 			log.Printf("Error running git add: %v, stderr: %s", err, stderr.String())
