@@ -11,6 +11,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+	"time"
 
 	"github.com/openai/openai-go"
 	"github.com/openai/openai-go/option"
@@ -91,9 +92,14 @@ func processImage(imagePath string) {
 	if len(markdownBlock) > 1 {
 		// extract the markdown content
 		markdownContent := strings.TrimSpace(markdownBlock[1])
+
+		fileName := filepath.Base(imagePath)
+
+		markdownLink := fmt.Sprintf("\n\n![[%s]]", fileName)
+		markdownContent += markdownLink
 		os.MkdirAll("/app/data", 0755)
 		// write the markdown content to a file
-		file, err := os.Create("/app/data/markdown.md")
+		file, err := os.Create(fmt.Sprintf("/app/data/main/%s.md", fileName))
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -103,6 +109,12 @@ func processImage(imagePath string) {
 			log.Fatal(err)
 		}
 		fmt.Println("Markdown file created successfully!")
+		// Move the image to the main folder
+		imagePath := fmt.Sprintf("/app/data/uploads/%s", fileName)
+		err = os.Rename(imagePath, fmt.Sprintf("/app/data/main/attachments/%s", fileName))
+		if err != nil {
+			log.Fatal(err)
+		}
 	} else {
 		fmt.Println("No markdown block found in the response.")
 	}
@@ -201,8 +213,13 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		defer file.Close()
 
+		// Generate a timestamped filename.
+		timestamp := time.Now().Format("2006-01-02 15:04:05")
+		timestamp = strings.ReplaceAll(timestamp, ":", "-")
+		fileExt := filepath.Ext(fileHeader.Filename)
+		fileName := fmt.Sprintf("%s_%s%s", strings.TrimSuffix(fileHeader.Filename, fileExt), timestamp, fileExt)
 		// Create the file path.
-		filePath := filepath.Join(uploadDir, fileHeader.Filename)
+		filePath := filepath.Join(uploadDir, fileName)
 
 		// Create the file.
 		dst, err := os.Create(filePath)
