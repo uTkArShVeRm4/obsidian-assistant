@@ -91,8 +91,9 @@ func processImage(imagePath string) {
 	if len(markdownBlock) > 1 {
 		// extract the markdown content
 		markdownContent := strings.TrimSpace(markdownBlock[1])
+		os.MkdirAll("/app/data", 0755)
 		// write the markdown content to a file
-		file, err := os.Create("markdown.md")
+		file, err := os.Create("/app/data/markdown.md")
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -163,7 +164,7 @@ func AskHandler(w http.ResponseWriter, r *http.Request) {
 func UploadHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		// Create the uploads directory if it doesn't exist.
-		uploadDir := "uploads"
+		uploadDir := "/app/data/uploads"
 		if _, err := os.Stat(uploadDir); os.IsNotExist(err) {
 			err := os.MkdirAll(uploadDir, 0755)
 			if err != nil {

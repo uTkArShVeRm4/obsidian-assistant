@@ -1,6 +1,6 @@
 FROM golang:1.23-alpine AS builder
 
-WORKDIR /app
+WORKDIR /build
 
 COPY go.mod go.sum ./
 RUN go mod download
@@ -13,9 +13,11 @@ FROM alpine:latest
 
 WORKDIR /app
 
-COPY --from=builder /app/main .
-RUN chmod +x /app/main
+COPY --from=builder /build/main .
 COPY .env .
+
+# Create a directory for your markdown files
+RUN mkdir -p /app/data
 
 EXPOSE 7777
 
