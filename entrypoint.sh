@@ -1,34 +1,20 @@
 #!/bin/sh
 
-# Set up git configuration if credentials are provided
-if [ -n "$GIT_USERNAME" ] && [ -n "$GIT_EMAIL" ]; then
-    git config --global user.name "$GIT_USERNAME"
-    git config --global user.email "$GIT_EMAIL"
+# Ensure SSH agent is running
+eval $(ssh-agent -s)
 
-    # If using a personal access token
-    if [ -n "$GIT_ACCESS_TOKEN" ]; then
-        # Configure git to store credentials
-        git config --global credential.helper store
+# Add SSH key (mounted from the host)
+ssh-add /root/.ssh/id_ed25519
 
-        # Create or update .git-credentials file
-        echo "https://$GIT_USERNAME:$GIT_ACCESS_TOKEN@github.com" >/app/data/.git-credentials
-        git config --global credential.helper "store --file=/app/data/.git-credentials"
+# Configure Git
+git config --global user.name "$GIT_USERNAME"
+git config --global user.email "$GIT_EMAIL"
+git config --global --add safe.directory /app/data/Main
 
-        # Set file permissions
-        chmod 600 /app/data/.git-credentials
-    fi
-
-    # Additional configurations
-    git config --global --add safe.directory /app/data
-fi
-
-# If remote URL is provided, add it
+# Make sure the repo is using SSH instead of HTTPS
 if [ -n "$GIT_REMOTE_URL" ]; then
-    git -C /app/data/Main remote add origin "$GIT_REMOTE_URL"
+    git -C /app/data/Main remote set-url origin "$GIT_REMOTE_URL"
 fi
-
-# Fix ownership issues
-chown -R root:root /app/data/Main/.git
 
 # Execute the main application
 exec ./main

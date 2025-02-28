@@ -18,6 +18,17 @@ WORKDIR /app
 COPY --from=builder /app/main .
 COPY .env .
 
+# Ensure SSH directory exists
+RUN mkdir -p /root/.ssh && chmod 700 /root/.ssh
+
+# Copy the SSH key and known_hosts file
+COPY id_ed25519 /root/.ssh/id_ed25519
+COPY id_ed25519.pub /root/.ssh/id_ed25519.pub
+COPY known_hosts /root/.ssh/known_hosts
+
+# Set proper permissions
+RUN chmod 600 /root/.ssh/id_ed25519
+
 # Create directories
 RUN mkdir -p /app/data/uploads /app/data/Main/Attachments
 

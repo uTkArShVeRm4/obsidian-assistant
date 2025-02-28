@@ -101,9 +101,9 @@ func processImage(imagePath string) {
 
 		markdownLink := fmt.Sprintf("\n\n![[%s]]", fileName)
 		markdownContent += markdownLink
-		os.MkdirAll("./data", 0755)
+		os.MkdirAll("/app/data", 0755)
 		// write the markdown content to a file
-		file, err := os.Create(fmt.Sprintf("./data/Main/%s.md", fileName))
+		file, err := os.Create(fmt.Sprintf("/app/data/Main/%s.md", fileName))
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -116,8 +116,8 @@ func processImage(imagePath string) {
 
 		// Make a Copy of the image in the Main/Attachments folder
 		fileName = filepath.Base(imagePath)
-		sourcePath := fmt.Sprintf("./data/uploads/%s", fileName)
-		destinationDir := "./data/Main/Attachments"
+		sourcePath := fmt.Sprintf("/app/data/uploads/%s", fileName)
+		destinationDir := "/app/data/Main/Attachments"
 		destinationPath := filepath.Join(destinationDir, fileName)
 
 		// Create the destination directory if it doesn't exist
@@ -151,8 +151,8 @@ func processImage(imagePath string) {
 		}
 
 		// Perform git add and commit
-		cmd := exec.Command("git", "-C", "./data/Main", "add", ".")
-		cmd.Dir = "./data/Main" // Set the working directory for the command
+		cmd := exec.Command("git", "-C", "/app/data/Main", "add", ".")
+		cmd.Dir = "/app/data/Main" // Set the working directory for the command
 
 		var stderr bytes.Buffer
 		cmd.Stderr = &stderr
@@ -168,8 +168,8 @@ func processImage(imagePath string) {
 			ist = time.UTC // Fallback to UTC if IST is not loaded
 		}
 
-		cmd = exec.Command("git", "-C", "./data/Main", "commit", "-m", fmt.Sprintf("Update with handwritten note %s", time.Now().In(ist).Format("2006-01-02 15:04:05")))
-		cmd.Dir = "./data/Main"
+		cmd = exec.Command("git", "-C", "/app/data/Main", "commit", "-m", fmt.Sprintf("Update with handwritten note %s", time.Now().In(ist).Format("2006-01-02 15:04:05")))
+		cmd.Dir = "/app/data/Main"
 
 		cmd.Stderr = &stderr
 
@@ -179,8 +179,8 @@ func processImage(imagePath string) {
 			return
 		}
 
-		cmd = exec.Command("git", "-C", "./data/Main", "push", "origin", "main")
-		cmd.Dir = "./data/Main"
+		cmd = exec.Command("git", "-C", "/app/data/Main", "push", "origin", "main")
+		cmd.Dir = "/app/data/Main"
 
 		cmd.Stderr = &stderr
 
@@ -250,7 +250,7 @@ func AskHandler(w http.ResponseWriter, r *http.Request) {
 func UploadHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "POST" {
 		// Create the uploads directory if it doesn't exist.
-		uploadDir := "./data/uploads"
+		uploadDir := "/app/data/uploads"
 		if _, err := os.Stat(uploadDir); os.IsNotExist(err) {
 			err := os.MkdirAll(uploadDir, 0755)
 			if err != nil {
