@@ -14,6 +14,7 @@ FROM alpine:latest
 WORKDIR /app
 
 COPY --from=builder /app/main .
+RUN chmod +x /app/main
 COPY .env .
 
 EXPOSE 7777
