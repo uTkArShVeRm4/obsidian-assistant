@@ -170,9 +170,23 @@ func processImage(imagePath string) {
 
 		cmd = exec.Command("git", "-C", "/app/data/Main", "commit", "-m", fmt.Sprintf("Update with handwritten note %s", time.Now().In(ist).Format("2006-01-02 15:04:05")))
 		cmd.Dir = "/app/data/Main"
+
+		cmd.Stderr = &stderr
+
 		err = cmd.Run()
 		if err != nil {
-			log.Printf("Error running git commit: %v", err)
+			log.Printf("Error running git commit: %v, stderr: %s", err, stderr.String())
+			return
+		}
+
+		cmd = exec.Command("git", "-C", "/app/data/Main", "push", "origin", "main")
+		cmd.Dir = "/app/data/Main"
+
+		cmd.Stderr = &stderr
+
+		err = cmd.Run()
+		if err != nil {
+			log.Printf("Error running git push: %v, stderr: %s", err, stderr.String())
 			return
 		}
 	} else {
