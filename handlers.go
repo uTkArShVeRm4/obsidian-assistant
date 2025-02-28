@@ -109,11 +109,40 @@ func processImage(imagePath string) {
 			log.Fatal(err)
 		}
 		fmt.Println("Markdown file created successfully!")
-		// Move the image to the Main folder
-		imagePath := fmt.Sprintf("/app/data/uploads/%s", fileName)
-		err = os.Rename(imagePath, fmt.Sprintf("/app/data/Main/attachments/%s", fileName))
+
+		// Make a Copy of the image in the Main/Attachments folder
+		sourcePath := fmt.Sprintf("/app/data/uploads/%s", fileName)
+		destinationDir := "/app/data/Main/Attachments"
+		destinationPath := filepath.Join(destinationDir, fileName)
+
+		// Create the destination directory if it doesn't exist
+		if _, err := os.Stat(destinationDir); os.IsNotExist(err) {
+			err := os.MkdirAll(destinationDir, 0755)
+			if err != nil {
+				log.Printf("Error creating directory: %v", err)
+				return
+			}
+		}
+
+		// Copy the file
+		sourceFile, err := os.Open(sourcePath)
 		if err != nil {
-			log.Fatal(err)
+			log.Printf("Error opening source file: %v", err)
+			return
+		}
+		defer sourceFile.Close()
+
+		destinationFile, err := os.Create(destinationPath)
+		if err != nil {
+			log.Printf("Error creating destination file: %v", err)
+			return
+		}
+		defer destinationFile.Close()
+
+		_, err = io.Copy(destinationFile, sourceFile)
+		if err != nil {
+			log.Printf("Error copying file: %v", err)
+			return
 		}
 	} else {
 		fmt.Println("No markdown block found in the response.")
@@ -215,9 +244,8 @@ func UploadHandler(w http.ResponseWriter, r *http.Request) {
 
 		// Generate a timestamped filename.
 		timestamp := time.Now().Format("2006-01-02 15:04:05")
-		timestamp = strings.ReplaceAll(timestamp, ":", "-")
 		fileExt := filepath.Ext(fileHeader.Filename)
-		fileName := fmt.Sprintf("%s_%s%s", strings.TrimSuffix(fileHeader.Filename, fileExt), timestamp, fileExt)
+		fileName := fmt.Sprintf("%s%s", timestamp, fileExt)
 		// Create the file path.
 		filePath := filepath.Join(uploadDir, fileName)
 
