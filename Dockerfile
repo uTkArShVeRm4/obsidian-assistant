@@ -1,6 +1,6 @@
 FROM golang:1.23-alpine AS builder
 
-WORKDIR /build
+WORKDIR /app
 
 COPY go.mod go.sum ./
 RUN go mod download
@@ -11,14 +11,21 @@ RUN go build -o main .
 
 FROM alpine:latest
 
+# Install git
+RUN apk add --no-cache git
+
 WORKDIR /app
 
-COPY --from=builder /build/main .
+COPY --from=builder /app/main .
 COPY .env .
 
-# Create a directory for your markdown files
-RUN mkdir -p /app/data
+# Create directories
+RUN mkdir -p /app/data/uploads /app/data/Main/Attachments
 
 EXPOSE 7777
 
-CMD ["./main"]
+# We'll use an entrypoint script to configure git
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+ENTRYPOINT ["/entrypoint.sh"]
