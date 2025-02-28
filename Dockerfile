@@ -11,8 +11,7 @@ RUN go build -o main .
 
 FROM alpine:latest
 
-# Install git
-RUN apk add --no-cache git
+RUN apk add --no-cache git tzdata
 
 WORKDIR /app
 

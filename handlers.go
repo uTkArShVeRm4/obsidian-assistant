@@ -150,8 +150,8 @@ func processImage(imagePath string) {
 		}
 
 		// Perform git add and commit
-		cmd := exec.Command("git", "-C", "/app/data", "add", ".")
-		cmd.Dir = "/app/data" // Set the working directory for the command
+		cmd := exec.Command("git", "-C", "/app/data/Main", "add", ".")
+		cmd.Dir = "/app/data/Main" // Set the working directory for the command
 		err = cmd.Run()
 		if err != nil {
 			log.Printf("Error running git add: %v", err)
@@ -163,8 +163,8 @@ func processImage(imagePath string) {
 			ist = time.UTC // Fallback to UTC if IST is not loaded
 		}
 
-		cmd = exec.Command("git", "-C", "/app/data", "commit", "-m", fmt.Sprintf("Update with handwritten note %s", time.Now().In(ist).Format("2006-01-02 15:04:05")))
-		cmd.Dir = "/app/data"
+		cmd = exec.Command("git", "-C", "/app/data/Main", "commit", "-m", fmt.Sprintf("Update with handwritten note %s", time.Now().In(ist).Format("2006-01-02 15:04:05")))
+		cmd.Dir = "/app/data/Main"
 		err = cmd.Run()
 		if err != nil {
 			log.Printf("Error running git commit: %v", err)
