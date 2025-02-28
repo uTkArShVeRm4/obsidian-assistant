@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"encoding/base64"
 	"fmt"
@@ -153,8 +154,11 @@ func processImage(imagePath string) {
 		cmd := exec.Command("git", "-C", "/app/data/Main", "add", ".")
 		cmd.Dir = "/app/data/Main" // Set the working directory for the command
 		err = cmd.Run()
+		var stderr bytes.Buffer
+		cmd.Stderr = &stderr
+		err = cmd.Run()
 		if err != nil {
-			log.Printf("Error running git add: %v", err)
+			log.Printf("Error running git add: %v, stderr: %s", err, stderr.String())
 			return
 		}
 		ist, err := time.LoadLocation("Asia/Kolkata")

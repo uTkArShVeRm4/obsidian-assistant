@@ -22,5 +22,13 @@ if [ -n "$GIT_USERNAME" ] && [ -n "$GIT_EMAIL" ]; then
     git config --global --add safe.directory /app/data
 fi
 
+# If remote URL is provided, add it
+if [ -n "$GIT_REMOTE_URL" ]; then
+    git remote add origin "$GIT_REMOTE_URL"
+fi
+
+# Fix ownership issues
+chown -R root:root /app/data/.git
+
 # Execute the main application
 exec ./main
