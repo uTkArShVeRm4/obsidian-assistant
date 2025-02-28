@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -94,6 +95,8 @@ func processImage(imagePath string) {
 		markdownContent := strings.TrimSpace(markdownBlock[1])
 
 		fileName := filepath.Base(imagePath)
+		// Remove the extension from the file name
+		fileName = strings.TrimSuffix(fileName, filepath.Ext(fileName))
 
 		markdownLink := fmt.Sprintf("\n\n![[%s]]", fileName)
 		markdownContent += markdownLink
@@ -142,6 +145,21 @@ func processImage(imagePath string) {
 		_, err = io.Copy(destinationFile, sourceFile)
 		if err != nil {
 			log.Printf("Error copying file: %v", err)
+			return
+		}
+
+		// Perform git add and commit
+		cmd := exec.Command("git", "add", ".")
+		err = cmd.Run()
+		if err != nil {
+			log.Printf("Error running git add: %v", err)
+			return
+		}
+
+		cmd = exec.Command("git", "commit", "-m", "Update with handwritten note %s", time.Now().Format("2006-01-02 15:04:05"))
+		err = cmd.Run()
+		if err != nil {
+			log.Printf("Error running git commit: %v", err)
 			return
 		}
 	} else {
